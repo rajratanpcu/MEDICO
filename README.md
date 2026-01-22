@@ -2,6 +2,8 @@
 
 Production-ready medical system with JWT authentication, Kafka messaging, AI fine-tuning, and comprehensive observability.
 
+**Important:** This software is non-clinical and provided "AS IS"; it is not cleared for diagnosis or treatment. See NOTICE for details.
+
 ## Features
 
 ### Core Capabilities
