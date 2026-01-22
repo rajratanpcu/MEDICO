@@ -1,0 +1,184 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-medical
+    environment:
+      POSTGRES_DB: medical
+      POSTGRES_USER: medical_user
+      POSTGRES_PASSWORD: change_me
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medical_user -d medical"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - medical-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - medical-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - medical-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+      - VITE_API_TIMEOUT=30000
+      - VITE_LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - medical-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: gateway
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/medical
+      SPRING_DATASOURCE_USERNAME: medical_user
+      SPRING_DATASOURCE_PASSWORD: change_me
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      AI_SERVICE_BASE_URL: http://ai-service:8000
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - medical-net
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: ai-service
+    environment:
+      LOG_LEVEL: info
+    ports:
+      - "8000:8000"
+    volumes:
+      - ai_models:/models
+    networks:
+      - medical-net
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: prometheus
+    profiles: [observability]
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - medical-net
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: grafana
+    profiles: [observability]
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - medical-net
+
+  elasticsearch:
+    image: elastic/elasticsearch:8.11.3
+    container_name: elasticsearch
+    profiles: [observability]
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - medical-net
+
+  logstash:
+    image: elastic/logstash:8.11.3
+    container_name: logstash
+    profiles: [observability]
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./backend/logs:/logs
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    depends_on:
+      - elasticsearch
+    networks:
+      - medical-net
+
+  kibana:
+    image: elastic/kibana:8.11.3
+    container_name: kibana
+    profiles: [observability]
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - medical-net
+
+volumes:
+  db_data:
+  ai_models:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+
+networks:
+  medical-net:
+    driver: bridge

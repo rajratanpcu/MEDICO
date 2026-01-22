@@ -1,0 +1,55 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-medical:5432/medical
+    username: medical_user
+    password: change_me
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  kafka:
+    bootstrap-servers: kafka:29092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: medical-group
+  
+server:
+  port: 8080
+
+jwt:
+  secret: "your-secret-key-min-256-bits-long-change-in-production-env"
+  expiration-ms: 86400000
+
+ai:
+  service:
+    base-url: http://ai-service:8000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate.SQL: WARN
+    com.example.medical: DEBUG
+    AUDIT: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log

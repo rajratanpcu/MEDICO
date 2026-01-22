@@ -1,0 +1,65 @@
+# Node / frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+frontend/build/
+.next/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+*.env
+*.pem
+
+# Coverage / testing
+coverage/
+.nyc_output/
+frontend/coverage/
+
+# Temporary
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+~$*
+
+# IDE
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# Backend / Java
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+**/target/
+
+# Python / AI service
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache
+.venv/
+venv/
+.envrc
+
+# Docker artifacts
+**/.docker-compose.override.yml
+
+# Misc
+*.orig
+*.rej

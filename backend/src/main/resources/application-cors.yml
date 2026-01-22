@@ -1,0 +1,85 @@
+# CORS Configuration for different environments
+
+app:
+  cors:
+    # Development - Allow localhost origins
+    allowed-origins:
+      - http://localhost:5173  # Vite default port
+      - http://localhost:3000  # React default port
+      - http://127.0.0.1:5173
+      - http://127.0.0.1:3000
+    
+    # Allowed HTTP methods
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    
+    # Allowed headers (* allows all headers)
+    allowed-headers: "*"
+    
+    # Allow credentials (JWT tokens, cookies)
+    allow-credentials: true
+    
+    # Preflight cache duration (seconds)
+    max-age: 3600
+
+---
+# Production profile
+spring:
+  config:
+    activate:
+      on-profile: production
+
+app:
+  cors:
+    # Production - Replace with your actual domain
+    allowed-origins:
+      - https://medical-app.example.com
+      - https://www.medical-app.example.com
+    
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    
+    allowed-headers:
+      - Authorization
+      - Content-Type
+      - Accept
+      - Origin
+      - X-Requested-With
+    
+    allow-credentials: true
+    max-age: 7200
+
+---
+# Staging profile
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+app:
+  cors:
+    allowed-origins:
+      - https://staging.medical-app.example.com
+      - http://localhost:5173
+    
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
