@@ -25,9 +25,17 @@ public class AIController {
 
     @PostMapping("/chat")
     public Map<String, Object> chat(@RequestBody ChatRequest request) {
-        return service.chat(request.patientId(), request.question());
+        // Handle both old format (patientId + question) and new format (message + conversationHistory)
+        String message = request.question() != null ? request.question() : request.message();
+        return service.chat(request.patientId(), message);
+    }
+
+    @PostMapping("/predict/symptoms")
+    public Map<String, Object> predictSymptoms(@RequestBody SymptomRequest request) {
+        return service.predictSymptoms(request.symptoms(), request.demographics(), request.vitals());
     }
 
     public record AnalyzeRequest(UUID reportId) { }
-    public record ChatRequest(UUID patientId, @NotBlank String question) { }
+    public record ChatRequest(UUID patientId, String question, String message, Object conversationHistory) { }
+    public record SymptomRequest(java.util.List<String> symptoms, Map<String, Object> demographics, Map<String, Object> vitals) { }
 }

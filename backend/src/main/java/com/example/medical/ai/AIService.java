@@ -2,6 +2,7 @@ package com.example.medical.ai;
 
 import com.example.medical.exception.ExternalServiceException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +29,27 @@ public class AIService {
     }
 
     public Map<String, Object> chat(UUID patientId, String question) {
-        return callEndpoint("/chat", Map.of("patient_id", patientId != null ? patientId.toString() : null,
-            "question", question));
+        Map<String, Object> aiResponse = callEndpoint("/chat", Map.of(
+            "patient_id", patientId != null ? patientId.toString() : "",
+            "question", question
+        ));
+        
+        // Map AI service response to frontend expected format
+        // AI service returns: { "answer": "...", "citations": [...], "safety_banner": "...", "model_version": "..." }
+        // Frontend expects: { "response": "..." }
+        return Map.of(
+            "response", aiResponse.getOrDefault("answer", "I'm sorry, I couldn't process that request."),
+            "citations", aiResponse.getOrDefault("citations", List.of()),
+            "safetyBanner", aiResponse.getOrDefault("safety_banner", "")
+        );
+    }
+
+    public Map<String, Object> predictSymptoms(List<String> symptoms, Map<String, Object> demographics, Map<String, Object> vitals) {
+        return callEndpoint("/predict/symptoms", Map.of(
+            "symptoms", symptoms,
+            "demographics", demographics != null ? demographics : Map.of(),
+            "vitals", vitals != null ? vitals : Map.of()
+        ));
     }
 
     private Map<String, Object> callEndpoint(String path, Map<String, Object> payload) {
@@ -45,14 +65,16 @@ public class AIService {
             AIRequestLog log = new AIRequestLog();
             log.setRequestType(path);
             log.setStatus("SUCCESS");
-            log.setResponseSummary(response != null ? response.toString() : null);
+            String summary = response != null ? response.toString() : null;
+            log.setResponseSummary(summary != null && summary.length() > 250 ? summary.substring(0, 250) : summary);
             logRepository.save(log);
             return response;
         } catch (Exception ex) {
             AIRequestLog log = new AIRequestLog();
             log.setRequestType(path);
             log.setStatus("ERROR");
-            log.setResponseSummary(ex.getMessage());
+            String errorMsg = ex.getMessage();
+            log.setResponseSummary(errorMsg != null && errorMsg.length() > 250 ? errorMsg.substring(0, 250) : errorMsg);
             logRepository.save(log);
             throw new ExternalServiceException("AI service call failed", ex);
         }

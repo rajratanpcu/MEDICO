@@ -12,6 +12,19 @@ export default {
       // Custom color palette for medical/healthcare
       colors: {
         // Primary colors - Trust & Stability
+        primary: {
+          50: '#f0f7ff',   // Lightest - backgrounds
+          100: '#e0effe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',  // Primary blue - trust & professionalism
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c3d66',
+          950: '#082f49',  // Darkest
+        },
         medical: {
           50: '#f0f7ff',   // Lightest - backgrounds
           100: '#e0effe',
@@ -81,20 +94,20 @@ export default {
         'display-lg': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
         'display-md': ['2.5rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
         'display-sm': ['2rem', { lineHeight: '1.3', fontWeight: '700' }],
-        
+
         // Headings
         'h1': ['1.875rem', { lineHeight: '1.3', fontWeight: '700' }],
         'h2': ['1.5rem', { lineHeight: '1.4', fontWeight: '600' }],
         'h3': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }],
         'h4': ['1.125rem', { lineHeight: '1.5', fontWeight: '600' }],
         'h5': ['1rem', { lineHeight: '1.5', fontWeight: '600' }],
-        
+
         // Body
         'body-lg': ['1.125rem', { lineHeight: '1.6' }],  // 18px - Main content
         'body-md': ['1rem', { lineHeight: '1.6' }],       // 16px - Standard
         'body-sm': ['0.875rem', { lineHeight: '1.5' }],   // 14px - Secondary
         'body-xs': ['0.75rem', { lineHeight: '1.4' }],    // 12px - Metadata
-        
+
         // Labels & forms
         'label': ['0.875rem', { lineHeight: '1.4', fontWeight: '500' }],
         'caption': ['0.75rem', { lineHeight: '1.4', fontWeight: '500' }],

@@ -53,36 +53,29 @@ export default function SymptomChecker({ patientId, onAnalysisComplete }) {
     setError(null)
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/ai/symptom-check`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({
-            patientId,
-            symptoms: selectedSymptoms,
-            duration,
-            severity,
-            notes,
-          }),
+      // Import apiClient at the top if not already imported
+      const apiClient = (await import('../../services/api')).default
+
+      const response = await apiClient.post('/ai/predict/symptoms', {
+        symptoms: selectedSymptoms,
+        demographics: {
+          duration,
+          severity
+        },
+        vitals: {
+          notes
         }
-      )
+      })
 
-      if (!response.ok) {
-        throw new Error('Analysis failed')
-      }
-
-      const data = await response.json()
+      const data = response.data
       setAnalysis(data)
 
       if (onAnalysisComplete) {
         onAnalysisComplete(data)
       }
     } catch (err) {
-      setError(err.message || 'Failed to analyze symptoms')
+      console.error('Symptom analysis error:', err)
+      setError(err.response?.data?.message || 'Failed to analyze symptoms. Please try again.')
     } finally {
       setAnalyzing(false)
     }
@@ -135,11 +128,10 @@ export default function SymptomChecker({ patientId, onAnalysisComplete }) {
                   <button
                     key={symptom}
                     onClick={() => toggleSymptom(symptom)}
-                    className={`p-3 rounded-lg border-2 transition-all text-body-sm font-medium text-center ${
-                      selectedSymptoms.includes(symptom)
+                    className={`p-3 rounded-lg border-2 transition-all text-body-sm font-medium text-center ${selectedSymptoms.includes(symptom)
                         ? 'border-medical-500 bg-medical-50 text-medical-700'
                         : 'border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-medical-200'
-                    }`}
+                      }`}
                   >
                     {symptom}
                   </button>
@@ -271,29 +263,26 @@ export default function SymptomChecker({ patientId, onAnalysisComplete }) {
 
               {/* When to Seek Care */}
               {analysis.urgency && (
-                <div className={`rounded-lg p-4 border-2 ${
-                  analysis.urgency === 'emergency'
+                <div className={`rounded-lg p-4 border-2 ${analysis.urgency === 'emergency'
                     ? 'bg-red-50 border-red-200'
                     : analysis.urgency === 'urgent'
                       ? 'bg-amber-50 border-amber-200'
                       : 'bg-calm-50 border-calm-200'
-                }`}>
-                  <p className={`font-semibold mb-2 ${
-                    analysis.urgency === 'emergency'
+                  }`}>
+                  <p className={`font-semibold mb-2 ${analysis.urgency === 'emergency'
                       ? 'text-red-900'
                       : analysis.urgency === 'urgent'
                         ? 'text-amber-900'
                         : 'text-calm-900'
-                  }`}>
+                    }`}>
                     When to Seek Medical Care
                   </p>
-                  <p className={`text-body-sm ${
-                    analysis.urgency === 'emergency'
+                  <p className={`text-body-sm ${analysis.urgency === 'emergency'
                       ? 'text-red-800'
                       : analysis.urgency === 'urgent'
                         ? 'text-amber-800'
                         : 'text-calm-800'
-                  }`}>
+                    }`}>
                     {analysis.urgencyDescription || 'Monitor your symptoms and seek care if they worsen.'}
                   </p>
                 </div>

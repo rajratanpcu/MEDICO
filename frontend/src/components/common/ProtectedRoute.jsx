@@ -22,6 +22,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-error mb-2">Access Denied</h1>
           <p className="text-gray-600">You don't have permission to access this page.</p>
+          <p className="text-sm text-gray-400 mt-4">Current Role: {user?.role || 'None'}</p>
+          <p className="text-sm text-gray-400">Required: {allowedRoles?.join(', ')}</p>
         </div>
       </div>
     )

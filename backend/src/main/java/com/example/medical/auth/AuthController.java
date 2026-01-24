@@ -30,13 +30,13 @@ public class AuthController {
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         User user = authService.authenticate(request.getEmail(), request.getPassword());
         String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-        return ResponseEntity.ok(new TokenResponse(token, expirationMs / 1000));
+        return ResponseEntity.ok(new TokenResponse(token, expirationMs / 1000, user.getId().toString(), user.getEmail(), user.getRole().name()));
     }
 
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@Valid @RequestBody LoginRequest request) {
         User user = authService.register(request.getEmail(), request.getPassword(), UserRole.CLINICIAN);
         String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-        return ResponseEntity.status(HttpStatus.CREATED).body(new TokenResponse(token, expirationMs / 1000));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TokenResponse(token, expirationMs / 1000, user.getId().toString(), user.getEmail(), user.getRole().name()));
     }
 }
