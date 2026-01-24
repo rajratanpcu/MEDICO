@@ -26,8 +26,20 @@ const DashboardHome = () => {
         try {
             // Fetch patients
             const patientsResponse = await apiClient.get('/patients?page=0&size=5')
-            setRecentPatients(patientsResponse.data.content || [])
-            setStats(prev => ({ ...prev, totalPatients: patientsResponse.data.totalElements || 0 }))
+
+            let patientList = []
+            let totalCount = 0
+
+            if (Array.isArray(patientsResponse.data)) {
+                patientList = patientsResponse.data.slice(0, 5)
+                totalCount = patientsResponse.data.length
+            } else {
+                patientList = patientsResponse.data.content || []
+                totalCount = patientsResponse.data.totalElements || 0
+            }
+
+            setRecentPatients(patientList)
+            setStats(prev => ({ ...prev, totalPatients: totalCount }))
 
             // You can add more API calls here for other stats
             setLoading(false)
@@ -198,8 +210,8 @@ const DashboardHome = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${patient.status === 'ACTIVE'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {patient.status}
                                                 </span>

@@ -38,6 +38,9 @@ class PredictionRequest(BaseModel):
 
 class PredictionResponse(BaseModel):
     conditions: List[dict]
+    recommendations: Optional[List[str]] = None
+    urgency: Optional[str] = None
+    urgencyDescription: Optional[str] = None
     model_version: str
     timestamp: datetime
 
@@ -104,9 +107,16 @@ async def predict_symptoms(request: PredictionRequest):
         # Stub: replace with actual ML model inference
         return PredictionResponse(
             conditions=[
-                {"name": "Condition A", "confidence": 0.75, "red_flag": False},
-                {"name": "Condition B", "confidence": 0.45, "red_flag": True}
+                {"name": "Viral Upper Respiratory Infection", "confidence": 0.85, "description": "Common cold or similar viral infection matching your symptoms."},
+                {"name": "Influenza (Flu)", "confidence": 0.45, "description": "Based on fever and fatigue reported."}
             ],
+            recommendations=[
+                "Rest and stay hydrated",
+                "Monitor temperature",
+                "Take over-the-counter fever reducers if needed"
+            ],
+            urgency="non-urgent",
+            urgencyDescription="Symptoms appear manageable at home. Seek care if fever exceeds 103°F or breathing becomes difficult.",
             model_version="v1.0",
             timestamp=datetime.utcnow()
         )

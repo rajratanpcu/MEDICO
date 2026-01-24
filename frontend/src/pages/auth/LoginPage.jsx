@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     try {
       await login(email, password)
-      navigate('/patient/dashboard')
+      navigate('/dashboard')
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password')
     } finally {

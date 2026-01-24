@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../../services/api'
 import { Upload, FileText, X, CheckCircle, AlertCircle } from 'lucide-react'
@@ -9,6 +9,29 @@ const ReportUploadPage = () => {
     const [uploading, setUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [uploadStatus, setUploadStatus] = useState(null) // 'success' | 'error'
+    const [patients, setPatients] = useState([])
+    const [loadingPatients, setLoadingPatients] = useState(true)
+
+    // Fetch patients on mount
+    useEffect(() => {
+        const fetchPatients = async () => {
+            try {
+                const response = await apiClient.get('/patients?size=100') // Fetch first 100 for dropdown
+                // Handle both List (current backend) and Page (future backend) responses
+                if (Array.isArray(response.data)) {
+                    setPatients(response.data)
+                } else {
+                    setPatients(response.data.content || [])
+                }
+            } catch (error) {
+                console.error('Error fetching patients:', error)
+            } finally {
+                setLoadingPatients(false)
+            }
+        }
+        fetchPatients()
+    }, [])
+
     const [formData, setFormData] = useState({
         patientId: '',
         title: '',
@@ -116,17 +139,29 @@ const ReportUploadPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Patient ID <span className="text-red-500">*</span>
+                                    Patient <span className="text-red-500">*</span>
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     name="patientId"
                                     value={formData.patientId}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                    placeholder="Enter patient ID"
                                     required
-                                />
+                                >
+                                    <option value="">Select a Patient</option>
+                                    {loadingPatients ? (
+                                        <option disabled>Loading...</option>
+                                    ) : (
+                                        patients.map(patient => (
+                                            <option key={patient.id} value={patient.id}>
+                                                {patient.firstName} {patient.lastName} (ID: {patient.id.substring(0, 8)}...)
+                                            </option>
+                                        ))
+                                    )}
+                                </select>
+                                {patients.length === 0 && !loadingPatients && (
+                                    <p className="text-xs text-red-500 mt-1">No patients found. Please add a patient first.</p>
+                                )}
                             </div>
 
                             <div>

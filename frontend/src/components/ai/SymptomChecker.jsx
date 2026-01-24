@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { AlertCircle, CheckCircle, MessageCircle, Loader } from 'lucide-react'
+import apiClient from '../../services/api'
 
 /**
  * SymptomChecker Component
@@ -53,9 +54,6 @@ export default function SymptomChecker({ patientId, onAnalysisComplete }) {
     setError(null)
 
     try {
-      // Import apiClient at the top if not already imported
-      const apiClient = (await import('../../services/api')).default
-
       const response = await apiClient.post('/ai/predict/symptoms', {
         symptoms: selectedSymptoms,
         demographics: {
@@ -129,8 +127,8 @@ export default function SymptomChecker({ patientId, onAnalysisComplete }) {
                     key={symptom}
                     onClick={() => toggleSymptom(symptom)}
                     className={`p-3 rounded-lg border-2 transition-all text-body-sm font-medium text-center ${selectedSymptoms.includes(symptom)
-                        ? 'border-medical-500 bg-medical-50 text-medical-700'
-                        : 'border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-medical-200'
+                      ? 'border-medical-500 bg-medical-50 text-medical-700'
+                      : 'border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-medical-200'
                       }`}
                   >
                     {symptom}
@@ -264,24 +262,24 @@ export default function SymptomChecker({ patientId, onAnalysisComplete }) {
               {/* When to Seek Care */}
               {analysis.urgency && (
                 <div className={`rounded-lg p-4 border-2 ${analysis.urgency === 'emergency'
-                    ? 'bg-red-50 border-red-200'
-                    : analysis.urgency === 'urgent'
-                      ? 'bg-amber-50 border-amber-200'
-                      : 'bg-calm-50 border-calm-200'
+                  ? 'bg-red-50 border-red-200'
+                  : analysis.urgency === 'urgent'
+                    ? 'bg-amber-50 border-amber-200'
+                    : 'bg-calm-50 border-calm-200'
                   }`}>
                   <p className={`font-semibold mb-2 ${analysis.urgency === 'emergency'
-                      ? 'text-red-900'
-                      : analysis.urgency === 'urgent'
-                        ? 'text-amber-900'
-                        : 'text-calm-900'
+                    ? 'text-red-900'
+                    : analysis.urgency === 'urgent'
+                      ? 'text-amber-900'
+                      : 'text-calm-900'
                     }`}>
                     When to Seek Medical Care
                   </p>
                   <p className={`text-body-sm ${analysis.urgency === 'emergency'
-                      ? 'text-red-800'
-                      : analysis.urgency === 'urgent'
-                        ? 'text-amber-800'
-                        : 'text-calm-800'
+                    ? 'text-red-800'
+                    : analysis.urgency === 'urgent'
+                      ? 'text-amber-800'
+                      : 'text-calm-800'
                     }`}>
                     {analysis.urgencyDescription || 'Monitor your symptoms and seek care if they worsen.'}
                   </p>

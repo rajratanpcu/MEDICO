@@ -13,7 +13,7 @@ const PatientForm = () => {
         lastName: '',
         email: '',
         phone: '',
-        dob: '',
+        dateOfBirth: '',
         gender: 'MALE',
         address: '',
         city: '',
@@ -64,7 +64,7 @@ const PatientForm = () => {
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Email is invalid'
         }
-        if (!formData.dob) newErrors.dob = 'Date of birth is required'
+        if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required'
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
@@ -185,13 +185,13 @@ const PatientForm = () => {
                                 </label>
                                 <input
                                     type="date"
-                                    name="dob"
-                                    value={formData.dob}
+                                    name="dateOfBirth"
+                                    value={formData.dateOfBirth}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.dob ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                 />
-                                {errors.dob && <p className="text-red-500 text-sm mt-1">{errors.dob}</p>}
+                                {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
                             </div>
 
                             <div>

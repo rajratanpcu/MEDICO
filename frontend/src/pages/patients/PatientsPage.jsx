@@ -20,8 +20,15 @@ const PatientsPage = () => {
         try {
             setLoading(true)
             const response = await apiClient.get(`/patients?page=${currentPage}&size=10`)
-            setPatients(response.data.content || [])
-            setTotalPages(response.data.totalPages || 0)
+
+            // Handle both List (current backend) and Page (future backend) responses
+            if (Array.isArray(response.data)) {
+                setPatients(response.data)
+                setTotalPages(1)
+            } else {
+                setPatients(response.data.content || [])
+                setTotalPages(response.data.totalPages || 0)
+            }
             setLoading(false)
         } catch (error) {
             console.error('Error fetching patients:', error)
@@ -185,8 +192,8 @@ const PatientsPage = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${patient.status === 'ACTIVE'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {patient.status}
                                                 </span>
