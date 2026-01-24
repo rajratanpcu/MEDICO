@@ -99,25 +99,28 @@ async def analyze_report(request: AnalyzeReportRequest):
 @app.post("/predict/symptoms", response_model=PredictionResponse)
 async def predict_symptoms(request: PredictionRequest):
     """
-    Symptom-to-disease prediction
-    Returns ranked conditions with confidence scores and red-flag indicators
+    Symptom-to-disease prediction using medical knowledge base
+    Returns ranked conditions with confidence scores and recommendations
     """
     try:
         logger.info(f"Predicting for symptoms: {request.symptoms}")
-        # Stub: replace with actual ML model inference
+        
+        # Import the predictor
+        from app.symptom_predictor import get_predictor
+        
+        # Get predictions
+        predictor = get_predictor()
+        result = predictor.predict(
+            symptoms=request.symptoms,
+            demographics=request.demographics
+        )
+        
         return PredictionResponse(
-            conditions=[
-                {"name": "Viral Upper Respiratory Infection", "confidence": 0.85, "description": "Common cold or similar viral infection matching your symptoms."},
-                {"name": "Influenza (Flu)", "confidence": 0.45, "description": "Based on fever and fatigue reported."}
-            ],
-            recommendations=[
-                "Rest and stay hydrated",
-                "Monitor temperature",
-                "Take over-the-counter fever reducers if needed"
-            ],
-            urgency="non-urgent",
-            urgencyDescription="Symptoms appear manageable at home. Seek care if fever exceeds 103°F or breathing becomes difficult.",
-            model_version="v1.0",
+            conditions=result["conditions"],
+            recommendations=result.get("recommendations", []),
+            urgency=result.get("urgency", "non-urgent"),
+            urgencyDescription=result.get("urgencyDescription", ""),
+            model_version="v2.0-knowledge-base",
             timestamp=datetime.utcnow()
         )
     except Exception as e:
