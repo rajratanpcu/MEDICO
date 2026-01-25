@@ -1,0 +1,115 @@
+{
+  "active": true,
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "EmergencyAlert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendEmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "path": "events",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "webhookId": "af559ccce6b0"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json[\"body\"][\"type\"]}}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "CRITICAL"
+            },
+            {
+              "value2": "EMAIL",
+              "output": 1
+            }
+          ]
+        }
+      },
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "🚨 **CRITICAL ALERT** 🚨\n\nPatient: {{$json[\"body\"][\"patient_name\"]}}\nLocation: {{$json[\"body\"][\"location\"]}}\nCondition: {{$json[\"body\"][\"condition\"]}}\n\nImmediate assistance required."
+      },
+      "name": "EmergencyAlert",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        900,
+        200
+      ],
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "YOUR_DISCORD_WEBHOOK_ID_HERE",
+          "name": "Discord Webhook Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin@hospital.com",
+        "toEmail": "={{$json[\"body\"][\"recipient\"]}}",
+        "subject": "={{$json[\"body\"][\"subject\"]}}",
+        "text": "={{$json[\"body\"][\"message\"]}}"
+      },
+      "name": "SendEmail",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        900,
+        400
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_SMTP_CREDENTIALS_ID_HERE",
+          "name": "SMTP Account"
+        }
+      }
+    }
+  ],
+  "name": "Medical Voice Automation"
+}

@@ -5,6 +5,13 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from app.training import train_symptom_classifier, train_entity_extractor
+from fastapi import UploadFile, File, Form
+from fastapi.responses import FileResponse
+import shutil
+import uuid
+import os
+from app.services.voice_handler import transcribe_audio, generate_speech_file
+from app.services.brain_service import BrainService
 
 # Placeholders for model artifacts
 MODEL_DIR = Path("/models")
@@ -431,6 +438,94 @@ async def fine_tune(request: FineTuneRequest, background_tasks: BackgroundTasks)
 async def metrics():
     """Prometheus metrics (stub)"""
     return {"status": "metrics endpoint ready"}
+
+@app.post("/voice/command")
+async def voice_command(file: UploadFile = File(...)):
+    """
+    Process voice input: Audio -> Text -> [Intent] -> Audio Response
+    """
+    # 1. Save temp audio file
+    temp_filename = f"temp_{uuid.uuid4()}.wav"
+    try:
+        with open(temp_filename, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        # 2. STT: Transcribe
+        user_text = transcribe_audio(temp_filename)
+        logger.info(f"Voice Input: {user_text}")
+        
+        if not user_text:
+            return {"error": "No speech detected"}
+            
+        if not user_text:
+            return {"error": "No speech detected"}
+
+        # 3. Brain: Process Intent & Safety
+        brain_response = BrainService.process_query(user_text)
+        action = brain_response["action"]
+        response_text = brain_response["text"]
+
+        if action == "TRIGGER_N8N_EMERGENCY":
+            import httpx
+            async with httpx.AsyncClient() as client:
+                try:
+                    await client.post(
+                        "http://n8n:5678/webhook/events",
+                        json={
+                            "type": "CRITICAL",
+                            "patient_name": "Raj (Detected Voice)",
+                            "location": "Voice Terminal",
+                            "condition": user_text
+                        },
+                        timeout=5.0
+                    )
+                    response_text = "Emergency alert has been dispatched to the team."
+                except Exception as e:
+                    logger.error(f"n8n Webhook failed: {e}")
+                    response_text = "I failed to reach the emergency network. Please call manually."
+
+        elif action == "TRIGGER_N8N_EMAIL":
+            import httpx
+            async with httpx.AsyncClient() as client:
+                try:
+                    await client.post(
+                        "http://n8n:5678/webhook/events",
+                        json={
+                            "type": "EMAIL",
+                            "recipient": "doctor@hospital.com",
+                            "subject": "Voice Note",
+                            "message": user_text
+                        },
+                        timeout=5.0
+                    )
+                    response_text = "I have sent the email."
+                except Exception as err:
+                     response_text = "I could not send the email."
+        
+        elif action == "CHAT_QUERY":
+            # Use existing Chat logic if no special action
+             response_text = f"I heard: {user_text}. (Chat integration in progress)"
+
+        # 4. TTS: Generate Audio Response
+        out_filename = f"response_{uuid.uuid4()}.mp3"
+        await generate_speech_file(response_text, out_filename)
+        
+        # 5. Return Audio File
+        # We use BackgroundTasks to clean up, but for now we'll rely on OS/restart to clean temp
+        # Ideally, use BackgroundTasks(cleanup, out_filename)
+        return FileResponse(
+            out_filename, 
+            media_type="audio/mpeg", 
+            headers={"X-Transcription": user_text}
+        )
+        
+    except Exception as e:
+        logger.error(f"Voice processing error: {e}")
+        return {"error": str(e)}
+    finally:
+        # Cleanup input file
+        if os.path.exists(temp_filename):
+            os.remove(temp_filename)
 
 if __name__ == "__main__":
     import uvicorn
