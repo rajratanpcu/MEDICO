@@ -139,7 +139,7 @@ http://localhost:5173
 | PostgreSQL | localhost:5432 | ✅ |
 | Kafka | localhost:9092 | ✅ |
 | Prometheus | http://localhost:9090 | ✅ |
-| Grafana | http://localhost:3000 | ✅ |
+| Grafana | http://localhost:3001 | ✅ |
 
 ---
 

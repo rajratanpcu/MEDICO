@@ -56,7 +56,7 @@ python main.py
 | PostgreSQL | localhost:5432 | Database |
 | Kafka | localhost:9092 | Message broker |
 | Prometheus | http://localhost:9090 | Metrics |
-| Grafana | http://localhost:3000 | Dashboards (admin/admin) |
+| Grafana | http://localhost:3001 | Dashboards (admin/admin) |
 | Kibana | http://localhost:5601 | Log viewer |
 
 ---

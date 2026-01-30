@@ -14,7 +14,7 @@ Write-Host "✓ Docker is running" -ForegroundColor Green
 
 # Check if ports are available
 Write-Host "`nChecking required ports..." -ForegroundColor Yellow
-$ports = @(5432, 2181, 9092, 8080, 8000, 9090, 3000, 9200, 5044, 5601)
+$ports = @(5432, 2181, 9092, 8080, 8000, 9090, 3000, 3001, 9200, 5044, 5601)
 $portsInUse = @()
 
 foreach ($port in $ports) {
@@ -46,5 +46,5 @@ Write-Host "`n=== Services Started ===" -ForegroundColor Green
 Write-Host "Backend API: http://localhost:8080" -ForegroundColor Cyan
 Write-Host "AI Service: http://localhost:8000" -ForegroundColor Cyan
 Write-Host "Prometheus: http://localhost:9090" -ForegroundColor Cyan
-Write-Host "Grafana: http://localhost:3000 (admin/admin)" -ForegroundColor Cyan
+Write-Host "Grafana: http://localhost:3001 (admin/admin)" -ForegroundColor Cyan
 Write-Host "Kibana: http://localhost:5601" -ForegroundColor Cyan
