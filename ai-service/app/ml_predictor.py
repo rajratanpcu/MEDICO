@@ -225,13 +225,13 @@ class HybridPredictor:
                 condition["confidence"] = round(condition["confidence"] / total_conf, 3)
         
         # Determine urgency from top condition
-        urgency = sorted_conditions[0]["urgency"] if sorted_conditions else "non-urgent"
+        urgency = sorted_conditions[0].get("urgency", "non-urgent") if sorted_conditions else "non-urgent"
         
         # Aggregate recommendations
         all_recs = []
         seen = set()
         for condition in sorted_conditions[:2]:
-            for rec in condition["recommendations"]:
+            for rec in condition.get("recommendations", []):
                 if rec not in seen:
                     all_recs.append(rec)
                     seen.add(rec)
