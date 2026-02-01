@@ -46,7 +46,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ../../apps/frontend
       dockerfile: Dockerfile
     container_name: frontend-app
     ports:
@@ -90,7 +90,7 @@ services:
 
   ai-service:
     build:
-      context: ./ai-service
+      context: ../../apps/ai-service
       dockerfile: Dockerfile
     container_name: ai-service
     environment:
@@ -151,7 +151,7 @@ services:
     profiles: [ observability ]
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./backend/logs:/logs
+      - ../../apps/backend/logs:/logs
     environment:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
     depends_on:
