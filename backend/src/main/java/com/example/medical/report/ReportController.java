@@ -156,6 +156,27 @@ public class ReportController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<Map<String, Object>> getPatientReports(
+            @PathVariable UUID patientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<MedicalReport> reportPage = reportRepository.findByPatientId(patientId, pageable);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", reportPage.getContent().stream()
+            .map(this::mapToResponse)
+            .toList());
+        response.put("totalPages", reportPage.getTotalPages());
+        response.put("totalElements", reportPage.getTotalElements());
+        response.put("currentPage", reportPage.getNumber());
+        response.put("patientId", patientId);
+
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReport(@PathVariable UUID id) {
         if (!reportRepository.existsById(id)) {
