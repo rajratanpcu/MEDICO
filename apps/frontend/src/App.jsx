@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import LoginPage from './pages/auth/LoginPage'
 import PatientDashboard from './pages/patient/PatientDashboard'
@@ -17,6 +17,7 @@ import SettingsPage from './pages/settings/SettingsPage'
 import EmergencyPage from './pages/emergency/EmergencyPage'
 import AnalyticsPage from './pages/analytics/AnalyticsPage'
 import LandingPage from './pages/landing/LandingPage'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -62,8 +63,8 @@ function App() {
               <Route path="/analytics" element={<AnalyticsPage />} />
             </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* 404 - Catch all unmatched routes */}
+            <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>
