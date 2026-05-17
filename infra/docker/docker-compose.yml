@@ -17,7 +17,6 @@ services:
       retries: 5
     networks:
       - medical-net
-
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
@@ -26,7 +25,6 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - medical-net
-
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
@@ -65,7 +63,6 @@ services:
       start_period: 40s
     networks:
       - medical-net
-
   gateway:
     build:
       context: ../../
