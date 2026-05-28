@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/medical
-    username: medical_user
-    password: change_me
+    url:${DATABASE_URL}
+    username:${DB_USERNAME}
+    password: ${DB_USERNAME}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
