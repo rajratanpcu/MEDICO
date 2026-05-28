@@ -10,7 +10,7 @@ React frontend for the AI-Powered Smart Medical Assistant system, connected to S
 
 ### 1. Install Dependencies
 ```powershell
-cd frontend
+cd apps/frontend
 npm install
 ```
 
@@ -217,8 +217,31 @@ Change this for production deployment.
 
 Before deploying to production:
 
-1. Update `VITE_API_BASE_URL` in `.env`
-2. Build optimized bundle: `npm run build`
-3. Deploy `dist/` folder to static hosting (Netlify, Vercel, S3)
-4. Configure CORS in Spring Security for production domain
+1. Deploy backend APIs first (Railway, Render, Fly.io, Azure, etc.)
+2. Set `VITE_API_BASE_URL` to your backend URL
+3. Build optimized bundle: `npm run build`
+4. Configure CORS in Spring Security for your frontend domain
 5. Use HTTPS for both frontend and backend
+
+### Deploy to Vercel (Recommended)
+
+1. Push this repository to GitHub.
+2. In Vercel dashboard, click **New Project** and import your repository.
+3. Set **Root Directory** to `apps/frontend`.
+4. Keep defaults:
+  - Framework preset: `Vite`
+  - Build command: `npm run build`
+  - Output directory: `dist`
+5. Add environment variables in Vercel project settings:
+  - `VITE_API_BASE_URL=https://your-backend-domain.com`
+6. Deploy.
+
+Because this app uses React Router (`BrowserRouter`), include SPA rewrite rules so direct URL access works (for example `/patients/123`). A `vercel.json` is included for this.
+
+Optional CLI deploy:
+
+```powershell
+cd apps/frontend
+npm i -g vercel
+vercel
+```

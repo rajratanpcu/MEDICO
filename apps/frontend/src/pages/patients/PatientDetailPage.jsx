@@ -253,7 +253,6 @@ const PatientDetailPage = () => {
                         )}
                     </div>
                 </div>
-            </div>
         </div>
     )
 }
