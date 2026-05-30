@@ -233,8 +233,20 @@ Before deploying to production:
   - Build command: `npm run build`
   - Output directory: `dist`
 5. Add environment variables in Vercel project settings:
-  - `VITE_API_BASE_URL=https://your-backend-domain.com`
+  - `VITE_API_BASE_URL=https://medico-backend.onrender.com`
 6. Deploy.
+
+### Render backend environment variables
+Use these values for the Render backend service:
+
+```text
+SPRING_PROFILES_ACTIVE=production
+APP_KAFKA_ENABLED=false
+ALLOWED_ORIGINS=https://medico.vercel.app
+DATABASE_URL=jdbc:postgresql://db.uolqxswlpsfzydlyvvmt.supabase.co:5432/postgres?sslmode=require
+DB_USERNAME=postgres
+DB_PASSWORD=[YOUR-PASSWORD]
+```
 
 Because this app uses React Router (`BrowserRouter`), include SPA rewrite rules so direct URL access works (for example `/patients/123`). A `vercel.json` is included for this.
 

@@ -37,7 +37,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
                     .allowedOriginPatterns(resolveAllowedOriginPatterns())
                     .allowedMethods(allowedMethods)
-                    .allowedHeaders(resolveAllowedHeaders())
+                    .allowedHeaders(resolveAllowedHeaders().toArray(new String[0]))
                     .allowCredentials(hasExplicitOrigins() && allowCredentials)
                     .maxAge(maxAge);
             }

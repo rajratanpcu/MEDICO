@@ -30,18 +30,41 @@ The PostgreSQL database is **fully connected and operational** with your Spring 
 
 ## 🔌 Connection Configuration
 
+### Supabase PostgreSQL connection string
+Use this Supabase connection string as the source of truth:
+
+```text
+postgresql://postgres:[YOUR-PASSWORD]@db.uolqxswlpsfzydlyvvmt.supabase.co:5432/postgres
+```
+
+On Render, split the connection details into separate environment variables and use the JDBC form with SSL enabled:
+
+```text
+DATABASE_URL=jdbc:postgresql://db.uolqxswlpsfzydlyvvmt.supabase.co:5432/postgres?sslmode=require
+DB_USERNAME=postgres
+DB_PASSWORD=[YOUR-PASSWORD]
+```
+
 ### Spring Boot Application (application.yml)
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://postgres-medical:5432/medical
-    username: medical_user
-    password: change_me
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/medical}
+    username: ${DB_USERNAME:medical_user}
+    password: ${DB_PASSWORD:change_me}
   jpa:
     hibernate:
       ddl-auto: update  # Auto-creates tables from entities
     show-sql: false
 ```
+
+### Render backend environment variables
+- `SPRING_PROFILES_ACTIVE=production`
+- `APP_KAFKA_ENABLED=false`
+- `ALLOWED_ORIGINS=https://medico.vercel.app`
+- `DATABASE_URL=jdbc:postgresql://db.uolqxswlpsfzydlyvvmt.supabase.co:5432/postgres?sslmode=require`
+- `DB_USERNAME=postgres`
+- `DB_PASSWORD=[YOUR-PASSWORD]`
 
 ### Hibernate Auto-Schema Generation
 - **Mode**: `update` - automatically creates/updates tables from Java entities

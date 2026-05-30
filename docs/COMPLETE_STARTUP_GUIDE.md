@@ -353,6 +353,16 @@ docker-compose -f docker-compose.prod.yml up
 
 ### Environment Configuration
 
+#### Render backend + Supabase
+```text
+SPRING_PROFILES_ACTIVE=production
+APP_KAFKA_ENABLED=false
+ALLOWED_ORIGINS=https://medico.vercel.app
+DATABASE_URL=jdbc:postgresql://db.uolqxswlpsfzydlyvvmt.supabase.co:5432/postgres?sslmode=require
+DB_USERNAME=postgres
+DB_PASSWORD=[YOUR-PASSWORD]
+```
+
 #### Frontend (.env)
 ```
 REACT_APP_API_BASE_URL=http://api.example.com
@@ -360,13 +370,18 @@ REACT_APP_AI_BASE_URL=http://ai.example.com
 REACT_APP_JWT_SECRET=your-secret-key
 ```
 
+#### Vercel frontend
+```text
+VITE_API_BASE_URL=https://medico-backend.onrender.com
+```
+
 #### Backend (application.yml)
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://prod-db:5432/medical
-    username: prod_user
-    password: secure_password
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/medical}
+    username: ${DB_USERNAME:medical_user}
+    password: ${DB_PASSWORD:change_me}
 
 jwt:
   secret: your-512-bit-secret-key
