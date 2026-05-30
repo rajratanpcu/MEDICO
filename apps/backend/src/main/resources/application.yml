@@ -14,8 +14,10 @@ server:
   address: 0.0.0.0
 
 app:
+  kafka:
+    enabled: ${APP_KAFKA_ENABLED:false}
   cors:
-    allowed-origins: ${ALLOWED_ORIGINS:}
+    allowed-origins: ${ALLOWED_ORIGINS:https://medico.vercel.app}
     allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
     allowed-headers: "*"
     allow-credentials: false

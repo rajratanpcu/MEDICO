@@ -4,9 +4,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @Service
-public class KafkaProducerService {
+@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true")
+public class KafkaProducerService implements DocumentEventPublisher {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducerService.class);
     private static final String TOPIC_DOCUMENT_UPLOADED = "document-uploaded";

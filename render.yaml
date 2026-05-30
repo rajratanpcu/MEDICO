@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: medical-backend
+    env: docker
+    rootDir: apps/backend
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: APP_KAFKA_ENABLED
+        value: false
+      - key: ALLOWED_ORIGINS
+        value: https://medico.vercel.app
