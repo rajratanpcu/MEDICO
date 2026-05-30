@@ -1,11 +1,22 @@
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/medical}
+    username: ${DB_USERNAME:medical_user}
+    password: ${DB_PASSWORD:change_me}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
     hibernate:
       ddl-auto: update
+
+server:
+  port: ${PORT:8080}
+  address: 0.0.0.0
+
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:}
+    allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: false
+    max-age: 3600
