@@ -1,74 +1,24 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/medical
-    username: medical_user
-    password: change_me
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-      maximum-pool-size: 10
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/medical}
+    username: ${DB_USERNAME:medical_user}
+    password: ${DB_PASSWORD:change_me}
+
   jpa:
-    database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        jdbc:
-          time_zone: UTC
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: medical-group
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 50MB
-      max-request-size: 50MB
-      file-size-threshold: 2KB
-  
+
 server:
-  port: 8080
+  port: ${PORT:8080}
+  address: 0.0.0.0
 
-jwt:
-  secret: "your-secret-key-min-256-bits-long-change-in-production-env"
-  expiration-ms: 86400000
-
-ai:
-  service:
-    base-url: http://localhost:8000
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics,prometheus
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-  endpoint:
-    health:
-      show-details: always
-
-logging:
-  level:
-    org.springframework: INFO
-    org.hibernate.SQL: WARN
-    com.example.medical: DEBUG
-    AUDIT: INFO
-  pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: logs/application.log
+app:
+  kafka:
+    enabled: ${APP_KAFKA_ENABLED:false}
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:https://medico.vercel.app}
+    allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: false
+    max-age: 3600

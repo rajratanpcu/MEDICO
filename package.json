@@ -1,0 +1,12 @@
+{
+  "name": "smart-medical-assistant-root",
+  "private": true,
+  "workspaces": [
+    "apps/frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace apps/frontend",
+    "dev": "npm run dev --workspace apps/frontend",
+    "preview": "npm run preview --workspace apps/frontend"
+  }
+}

@@ -29,6 +29,27 @@ spring:
 server:
   port: 8080
 
+app:
+  kafka:
+    enabled: true
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://localhost:3000
+      - http://127.0.0.1:5173
+      - http://127.0.0.1:3000
+      - https://medico.vercel.app
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - PATCH
+      - OPTIONS
+    allowed-headers: "*"
+    allow-credentials: false
+    max-age: 3600
+
 jwt:
   secret: "your-secret-key-min-256-bits-long-change-in-production-env"
   expiration-ms: 86400000

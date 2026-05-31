@@ -5,7 +5,7 @@ import com.example.medical.doctor.Doctor;
 import com.example.medical.doctor.DoctorRepository;
 import com.example.medical.exception.NotFoundException;
 import com.example.medical.messaging.DocumentUploadedEvent;
-import com.example.medical.messaging.KafkaProducerService;
+import com.example.medical.messaging.DocumentEventPublisher;
 import com.example.medical.patient.Patient;
 import com.example.medical.patient.PatientRepository;
 import jakarta.transaction.Transactional;
@@ -20,16 +20,16 @@ public class MedicalReportService {
     private final MedicalReportRepository repository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
-    private final KafkaProducerService kafkaProducerService;
+    private final DocumentEventPublisher documentEventPublisher;
 
     public MedicalReportService(MedicalReportRepository repository,
                                 PatientRepository patientRepository,
                                 DoctorRepository doctorRepository,
-                                KafkaProducerService kafkaProducerService) {
+                                DocumentEventPublisher documentEventPublisher) {
         this.repository = repository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
-        this.kafkaProducerService = kafkaProducerService;
+        this.documentEventPublisher = documentEventPublisher;
     }
 
     public MedicalReport create(UUID patientId, UUID doctorId, MedicalReport payload) {
@@ -41,7 +41,7 @@ public class MedicalReportService {
         payload.setDoctor(doctor);
         MedicalReport saved = repository.save(payload);
         // Publish document-uploaded event to Kafka
-        kafkaProducerService.publishDocumentUploaded(
+        documentEventPublisher.publishDocumentUploaded(
             new DocumentUploadedEvent(saved.getId(), patientId, saved.getStorageUrl())
         );
         return saved;

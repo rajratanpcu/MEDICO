@@ -17,11 +17,13 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @EnableKafka
+@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true")
 public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
