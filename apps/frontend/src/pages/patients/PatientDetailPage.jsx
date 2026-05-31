@@ -264,6 +264,7 @@ const PatientDetailPage = () => {
                     )}
 
                 </div>
+
             </div>
 
         </div>

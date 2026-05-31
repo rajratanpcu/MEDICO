@@ -82,8 +82,23 @@ jwt:
 
 spring:
   datasource:
-    username: CHANGE_ME
-    password: CHANGE_ME
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/medical}
+    username: ${DB_USERNAME:medical_user}
+    password: ${DB_PASSWORD:change_me}
+```
+
+For the Render backend, use the Supabase connection details in this format:
+
+```text
+DATABASE_URL=jdbc:postgresql://db.uolqxswlpsfzydlyvvmt.supabase.co:5432/postgres?sslmode=require
+DB_USERNAME=postgres
+DB_PASSWORD=[YOUR-PASSWORD]
+```
+
+Set the frontend environment variable on Vercel to:
+
+```text
+VITE_API_BASE_URL=https://medico-backend.onrender.com
 ```
 
 ---

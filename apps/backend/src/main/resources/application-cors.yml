@@ -1,5 +1,10 @@
 # CORS Configuration for different environments
 
+spring:
+  config:
+    activate:
+      on-profile: local
+
 app:
   cors:
     # Development - Allow localhost origins
